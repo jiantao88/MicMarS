@@ -158,6 +158,76 @@ agent = PredictionAgent(
 )
 ```
 
+## 🚀 新增功能
+
+### 📈 预测代理（Prediction Agent）
+本项目在原有MarS基础上新增了基于机器学习的市场预测代理，具有以下特点：
+
+#### 🔍 技术指标
+集成了多个技术分析指标用于市场分析：
+- RSI（相对强弱指标）
+- MACD（移动平均收敛散度）
+- 布林带（Bollinger Bands）
+- EMA（指数移动平均线）
+
+#### 🤖 机器学习预测
+- 使用LSTM神经网络进行价格预测
+- 提供未来3天的价格预测，并附带置信度
+- 根据市场状况自动调整预测模型
+
+#### 💹 自动交易
+- 基于预测价格走势自动做出交易决策
+- 实现基于置信度的风险管理
+- 可自定义交易量和价格阈值
+
+### 📝 使用示例
+
+1. 创建预测代理：
+```python
+agent = PredictionAgent(
+    symbol="BTC-USD",           # 交易对
+    prediction_days=30,         # 使用历史数据天数
+    features=['RSI', 'MACD', 'BB_upper', 'BB_lower', 'EMA']  # 技术指标
+)
+```
+
+2. 运行模拟：
+```python
+env = Env(exchange, description="Prediction agent simulation")
+env.register_agent(agent)
+env.push_events(create_exchange_events(config))
+for observation in env.env():
+    action = observation.agent.get_action(observation)
+    env.step(action)
+```
+
+### 🎯 预测结果示例
+
+模型会输出未来3天的价格预测，包含预测价格和置信度：
+
+```
+未来3天的价格预测：
+        Date  Predicted_Price  Confidence
+0 2024-12-20      42155.23       0.950
+1 2024-12-21      42890.15       0.825
+2 2024-12-22      43102.67       0.700
+```
+
+- Date: 预测日期
+- Predicted_Price: 预测价格（美元）
+- Confidence: 预测置信度（0-1之间）
+
+### 🔄 交易逻辑
+- 当预测价格上涨超过2%时，系统自动下达买入订单
+- 当预测价格下跌超过2%时，系统自动下达卖出订单
+- 每天仅在开盘时进行一次预测和交易决策
+
+### 📊 模型训练
+- 使用30天的历史数据进行训练
+- 模型结构：LSTM神经网络
+- 训练轮次：25轮
+- 损失函数：MSE（均方误差）
+
 ## ⚠️ Disclaimer
 
 Users of the market simulation engine and the code should prepare their own agents which may be included trained models built with users’ own data, independently assess and test the risks of the model in a specify use scenario, ensure the responsible use of AI technology, including but limited to developing and integrating risk mitigation measures, and comply with all applicable laws and regulations. The market simulation engine does not provide financial opinions, nor is it designed to replace the role of qualified financial professionals in formulating, assessing, and approving finance products. The outputs of the market simulation engine do not reflect the opinions of Microsoft.
@@ -193,3 +263,5 @@ Any use of third-party trademarks or logos are subject to those third-party's po
   journal={arXiv preprint arXiv:2409.07486},
   year={2024}
 }
+
+```
