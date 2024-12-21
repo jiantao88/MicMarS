@@ -128,6 +128,36 @@ You can see the price trajectory generated from matching orders by the noise age
 Note: This example demonstrates the use of MarS to simulate a market with a noise agent. For realistic market simulations, a more comprehensive model, such as the Large Market Model (LMM) in MarS, is typically required.
 
 
+## 🤖 Enhanced Features
+
+### 📈 Prediction Agent
+The project now includes an advanced prediction agent that utilizes machine learning for market prediction:
+
+- **Technical Indicators**: Incorporates multiple technical analysis indicators:
+  - RSI (Relative Strength Index)
+  - MACD (Moving Average Convergence Divergence)
+  - Bollinger Bands
+  - EMA (Exponential Moving Average)
+
+- **ML-Based Prediction**:
+  - Uses LSTM neural network for price prediction
+  - Provides 3-day price forecasts with confidence levels
+  - Automatically adjusts predictions based on market conditions
+
+- **Automated Trading**:
+  - Makes trading decisions based on predicted price movements
+  - Implements risk management with confidence thresholds
+  - Executes trades with customizable volume and price thresholds
+
+### 🔄 Usage Example
+```python
+agent = PredictionAgent(
+    symbol="BTC-USD",
+    prediction_days=30,  # Days of historical data to use
+    features=['RSI', 'MACD', 'BB_upper', 'BB_lower', 'EMA']
+)
+```
+
 ## ⚠️ Disclaimer
 
 Users of the market simulation engine and the code should prepare their own agents which may be included trained models built with users’ own data, independently assess and test the risks of the model in a specify use scenario, ensure the responsible use of AI technology, including but limited to developing and integrating risk mitigation measures, and comply with all applicable laws and regulations. The market simulation engine does not provide financial opinions, nor is it designed to replace the role of qualified financial professionals in formulating, assessing, and approving finance products. The outputs of the market simulation engine do not reflect the opinions of Microsoft.
@@ -163,4 +193,3 @@ Any use of third-party trademarks or logos are subject to those third-party's po
   journal={arXiv preprint arXiv:2409.07486},
   year={2024}
 }
-```
