@@ -1,3 +1,86 @@
+# MarS: 基于生成式基础模型的金融市场模拟引擎
+
+![build](https://img.shields.io/badge/build-pass-green)
+![MIT](https://img.shields.io/badge/license-MIT-blue)
+
+<h3 align="center">
+    <img src="doc/img/MarS_homepage.gif" alt="MarS homepage" style="width: 100%; ">
+
+<a href="https://arxiv.org/abs/2409.07486" target="_blank">📄 论文</a> + <a href="https://mars-lmm.github.io/" target="_blank">🏠️ 项目主页</a>
+</h3>
+
+## 🚀 新增功能
+
+### 📈 预测代理（Prediction Agent）
+本项目在原有MarS基础上新增了基于机器学习的市场预测代理，具有以下特点：
+
+#### 🔍 技术指标
+集成了多个技术分析指标用于市场分析：
+- RSI（相对强弱指标）
+- MACD（移动平均收敛散度）
+- 布林带（Bollinger Bands）
+- EMA（指数移动平均线）
+
+#### 🤖 机器学习预测
+- 使用LSTM神经网络进行价格预测
+- 提供未来3天的价格预测，并附带置信度
+- 根据市场状况自动调整预测模型
+
+#### 💹 自动交易
+- 基于预测价格走势自动做出交易决策
+- 实现基于置信度的风险管理
+- 可自定义交易量和价格阈值
+
+### 📝 使用示例
+
+1. 创建预测代理：
+```python
+agent = PredictionAgent(
+    symbol="BTC-USD",           # 交易对
+    prediction_days=30,         # 使用历史数据天数
+    features=['RSI', 'MACD', 'BB_upper', 'BB_lower', 'EMA']  # 技术指标
+)
+```
+
+2. 运行模拟：
+```python
+env = Env(exchange, description="Prediction agent simulation")
+env.register_agent(agent)
+env.push_events(create_exchange_events(config))
+for observation in env.env():
+    action = observation.agent.get_action(observation)
+    env.step(action)
+```
+
+### 🎯 预测结果示例
+
+模型会输出未来3天的价格预测，包含预测价格和置信度：
+
+```
+未来3天的价格预测：
+        Date  Predicted_Price  Confidence
+0 2024-12-20      42155.23       0.950
+1 2024-12-21      42890.15       0.825
+2 2024-12-22      43102.67       0.700
+```
+
+- Date: 预测日期
+- Predicted_Price: 预测价格（美元）
+- Confidence: 预测置信度（0-1之间）
+
+### 🔄 交易逻辑
+- 当预测价格上涨超过2%时，系统自动下达买入订单
+- 当预测价格下跌超过2%时，系统自动下达卖出订单
+- 每天仅在开盘时进行一次预测和交易决策
+
+### 📊 模型训练
+- 使用30天的历史数据进行训练
+- 模型结构：LSTM神经网络
+- 训练轮次：25轮
+- 损失函数：MSE（均方误差）
+
+---
+
 # MarS: A Financial Market Simulation Engine Powered by Generative Foundation Model
 
 ![build](https://img.shields.io/badge/build-pass-green)
@@ -11,18 +94,41 @@
 
 ## 📚 Introduction
 
-MarS is a cutting-edge financial market simulation engine powered by the Large Market Model (LMM), a generative foundation model. MarS addresses the need for realistic, interactive, and controllable order generation. This paper's primary goals are to evaluate the LMM's scaling law in financial markets, assess MarS’s realism, balance controlled generation with market impact, and demonstrate MarS’s potential applications.
+MarS is a cutting-edge financial market simulation engine powered by the Large Market Model (LMM), a generative foundation model. MarS addresses the need for realistic, interactive, and controllable order generation. This paper's primary goals are to evaluate the LMM's scaling law in financial markets, assess MarS's realism, balance controlled generation with market impact, and demonstrate MarS's potential applications.
 
 Below is a high-level overview diagram illustrating the core components, workflow, and potential applications of the MarS simulation engine:
 
 <img src="doc/img/high-level-overview.png" alt="High-Level Overview of MarS" />
 
-### 🎯 Main Contributions
-- We take the first step toward building a generative foundation model as a world model for financial market and verify the scaling law of the Large Market Model. It demonstrates the huge potential of this new direction of domain-specific foundation models.
-- We design a realistic Market Simulation based on the LMM to fulfill two key requirements: generating target scenarios and modeling order market impacts, thereby unlocking LMM’s potential for meaningful applications.
-- We showcase four types of downstream applications of MarS, demonstrating the significant potential of the MarS-based paradigm for the industry.
+## 🤖 Enhanced Features
 
-For more detailed information, please refer to our [paper](https://arxiv.org/abs/2409.07486) and [website](https://mars-lmm.github.io/).
+### 📈 Prediction Agent
+The project now includes an advanced prediction agent that utilizes machine learning for market prediction:
+
+- **Technical Indicators**: Incorporates multiple technical analysis indicators:
+  - RSI (Relative Strength Index)
+  - MACD (Moving Average Convergence Divergence)
+  - Bollinger Bands
+  - EMA (Exponential Moving Average)
+
+- **ML-Based Prediction**:
+  - Uses LSTM neural network for price prediction
+  - Provides 3-day price forecasts with confidence levels
+  - Automatically adjusts predictions based on market conditions
+
+- **Automated Trading**:
+  - Makes trading decisions based on predicted price movements
+  - Implements risk management with confidence thresholds
+  - Executes trades with customizable volume and price thresholds
+
+### 🔄 Usage Example
+```python
+agent = PredictionAgent(
+    symbol="BTC-USD",
+    prediction_days=30,  # Days of historical data to use
+    features=['RSI', 'MACD', 'BB_upper', 'BB_lower', 'EMA']
+)
+```
 
 ## 🚀 Current Release
 
@@ -127,106 +233,6 @@ You can see the price trajectory generated from matching orders by the noise age
 
 Note: This example demonstrates the use of MarS to simulate a market with a noise agent. For realistic market simulations, a more comprehensive model, such as the Large Market Model (LMM) in MarS, is typically required.
 
-
-## 🤖 Enhanced Features
-
-### 📈 Prediction Agent
-The project now includes an advanced prediction agent that utilizes machine learning for market prediction:
-
-- **Technical Indicators**: Incorporates multiple technical analysis indicators:
-  - RSI (Relative Strength Index)
-  - MACD (Moving Average Convergence Divergence)
-  - Bollinger Bands
-  - EMA (Exponential Moving Average)
-
-- **ML-Based Prediction**:
-  - Uses LSTM neural network for price prediction
-  - Provides 3-day price forecasts with confidence levels
-  - Automatically adjusts predictions based on market conditions
-
-- **Automated Trading**:
-  - Makes trading decisions based on predicted price movements
-  - Implements risk management with confidence thresholds
-  - Executes trades with customizable volume and price thresholds
-
-### 🔄 Usage Example
-```python
-agent = PredictionAgent(
-    symbol="BTC-USD",
-    prediction_days=30,  # Days of historical data to use
-    features=['RSI', 'MACD', 'BB_upper', 'BB_lower', 'EMA']
-)
-```
-
-## 🚀 新增功能
-
-### 📈 预测代理（Prediction Agent）
-本项目在原有MarS基础上新增了基于机器学习的市场预测代理，具有以下特点：
-
-#### 🔍 技术指标
-集成了多个技术分析指标用于市场分析：
-- RSI（相对强弱指标）
-- MACD（移动平均收敛散度）
-- 布林带（Bollinger Bands）
-- EMA（指数移动平均线）
-
-#### 🤖 机器学习预测
-- 使用LSTM神经网络进行价格预测
-- 提供未来3天的价格预测，并附带置信度
-- 根据市场状况自动调整预测模型
-
-#### 💹 自动交易
-- 基于预测价格走势自动做出交易决策
-- 实现基于置信度的风险管理
-- 可自定义交易量和价格阈值
-
-### 📝 使用示例
-
-1. 创建预测代理：
-```python
-agent = PredictionAgent(
-    symbol="BTC-USD",           # 交易对
-    prediction_days=30,         # 使用历史数据天数
-    features=['RSI', 'MACD', 'BB_upper', 'BB_lower', 'EMA']  # 技术指标
-)
-```
-
-2. 运行模拟：
-```python
-env = Env(exchange, description="Prediction agent simulation")
-env.register_agent(agent)
-env.push_events(create_exchange_events(config))
-for observation in env.env():
-    action = observation.agent.get_action(observation)
-    env.step(action)
-```
-
-### 🎯 预测结果示例
-
-模型会输出未来3天的价格预测，包含预测价格和置信度：
-
-```
-未来3天的价格预测：
-        Date  Predicted_Price  Confidence
-0 2024-12-20      42155.23       0.950
-1 2024-12-21      42890.15       0.825
-2 2024-12-22      43102.67       0.700
-```
-
-- Date: 预测日期
-- Predicted_Price: 预测价格（美元）
-- Confidence: 预测置信度（0-1之间）
-
-### 🔄 交易逻辑
-- 当预测价格上涨超过2%时，系统自动下达买入订单
-- 当预测价格下跌超过2%时，系统自动下达卖出订单
-- 每天仅在开盘时进行一次预测和交易决策
-
-### 📊 模型训练
-- 使用30天的历史数据进行训练
-- 模型结构：LSTM神经网络
-- 训练轮次：25轮
-- 损失函数：MSE（均方误差）
 
 ## ⚠️ Disclaimer
 
